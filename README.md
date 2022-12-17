@@ -32,7 +32,7 @@ pip install Flask
 ```
 cd codes
 ```
-### Set environment variablese in MacOS
+### Set environment variablese in MacOS:
 ```
 export FLASK_APP=app.py
 ```
@@ -44,4 +44,8 @@ setx FLASK_APP "app.py"
 ```
 flask run
 ```
+# Your .gitignore file
+First, create an .gitignore file. <br/>
+Please include following to your .gitignore file:
+./<your_virtual_env_name>
 
