@@ -1,12 +1,12 @@
 # Installation <br/>
 
-Firs check your pip version with:
+Firs check your pip version with:<br/>
 ```
 pip --version <br/>
 ```
-If not installed go to to website and install with python:
-for Windows: https://www.geeksforgeeks.org/how-to-install-pip-on-windows/
-for Mac: Just use brew with command 
+If not installed go to to website and install with python:<br/>
+for Windows: https://www.geeksforgeeks.org/how-to-install-pip-on-windows/<br/>
+for Mac: Just use brew with command <br/>
 ```
 brew install python
 ```
