@@ -2,15 +2,16 @@
 
 Firs check your pip version with:<br/>
 ```
-pip --version <br/>
+pip --version
 ```
+<br/>
 If not installed go to to website and install with python:<br/>
 for Windows: https://www.geeksforgeeks.org/how-to-install-pip-on-windows/<br/>
 for Mac: Just use brew with command <br/>
 ```
 brew install python
 ```
-Homebrew will install the latest version of Python (including PIP)
+Homebrew will install the latest version of Python (including PIP)<br/>
 
 <br/>
 How to install brew?  https://docs.brew.sh/Installation
@@ -27,12 +28,12 @@ brew install pipenv
 Install pipenv on Windows:<br/>
 ```
 pip install pipenv
-```<br/>
+```
 ### Create your environment:<br/>
 Note: after installing pipenv everything will be easier just open a terminal or command promt on the folder called "loginApp" where the "Pipfile" stored.
 <br/>
 After cd to loginApp<br/>
-MacOS or Windows:
+MacOS or Windows:<br/>
 ```
 pipenv install
 ```
