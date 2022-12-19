@@ -1,6 +1,8 @@
+Note: Please dd your venv, .venv or any enviromental variables, cache variables to .gitignore
+
 # Installation <br/>
 
-Firs check your pip version with:<br/>
+First check your pip version with:<br/>
 ```
 pip --version
 ```
