@@ -75,7 +75,7 @@ How to setup your flask app:<br/>
 - Another method which I prefer is create a launch.json file if you're using VScode<br/>
 - My example launch.json file in the .vscode folder but it is set for MacOS<br/>
 - But by changing the ```"python": "${workspaceFolder}/loginApp/.venv/bin/python3.10"``` to your venv path it should work as well<br/>
-- launch.json example<br/>
+- launch.json example<br/><br/>
 <img width="487" alt="Screen Shot 2022-12-19 at 16 56 27" src="https://user-images.githubusercontent.com/94080241/208441754-6aa75e98-1a1c-48db-97e7-7b664f688755.png">
-<br/>
+<br/><br/>
 If I miss anything just reach me
