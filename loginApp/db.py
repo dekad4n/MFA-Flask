@@ -14,7 +14,7 @@ def get_db():
     again.
     """
     if "db" not in g:
-        g.db = pymongo.MongoClient('mongodb://localhost:27017/')
+        g.db = pymongo.MongoClient('mongodb://admin:pass@localhost:27017/')
 
     return g.db.loginApp
 

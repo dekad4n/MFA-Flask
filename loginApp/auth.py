@@ -94,7 +94,7 @@ def register():
     return render_template("auth/register.html")
 
 
-def sendEmail(code):
+def sendEmail(code,to):
 
     # server = session.get('server')
     # if server is None:
@@ -105,13 +105,14 @@ def sendEmail(code):
     server.login('sadigulbey@hotmail.com', 'hocam123')
     # session['server'] = server
     # Set the recipient and message
-    to = 'sadigulbey@sabanciuniv.edu'
+    to = to
     subject = 'Two-factor authentication code'
     body = f'Your code is: {code}'
     msg = f'Subject: {subject}\n\n{body}'
 
     # Send the email
     server.sendmail('sadigulbey@hotmail.com', to, msg)
+    server.quit()
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
@@ -140,7 +141,7 @@ def login():
             secret_key = totp.now()
 
             data = {'username': username, "MFA": base32_key}
-            sendEmail(secret_key)
+            sendEmail(secret_key, user["email"])
             db["MFA"].find_one_and_update(
                 query, {"$set": data}, upsert=True)
             session["username"] = username
