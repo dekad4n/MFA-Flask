@@ -38,8 +38,6 @@ def init_db():
         db.loginApp['User'].insert_one(user)
         logger.info("Initialized the database with example user:", user)
 
-
-
 def init_app(app):
     """Register database functions with the Flask app. This is called by
     the application factory.

@@ -6,6 +6,12 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from bson.objectid import ObjectId
 
 from db import get_db
+import smtplib
+import pyotp
+import secrets
+import base64
+
+
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -88,6 +94,25 @@ def register():
     return render_template("auth/register.html")
 
 
+def sendEmail(code):
+
+    # server = session.get('server')
+    # if server is None:
+    print("here",code)
+    server = smtplib.SMTP('smtp.office365.com', port=587)
+    server.starttls()
+    # Login to the server (optional)
+    server.login('sadigulbey@hotmail.com', 'hocam123')
+    # session['server'] = server
+    # Set the recipient and message
+    to = 'sadigulbey@sabanciuniv.edu'
+    subject = 'Two-factor authentication code'
+    body = f'Your code is: {code}'
+    msg = f'Subject: {subject}\n\n{body}'
+
+    # Send the email
+    server.sendmail('sadigulbey@hotmail.com', to, msg)
+
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     """Log in a registered user by adding the user id to the session."""
@@ -107,14 +132,54 @@ def login():
 
         if error is None:
             # store the user id in a new session and return to the index
-            session.clear()
-            session["user_id"] = str(user["_id"]) # pymongo object id
-            return redirect(url_for("home.dashboard"))
+            query = {'username': username}
+            key = secrets.token_bytes(16)
+            base32_key = base64.b32encode(key).decode('utf-8')
+            print(base32_key)
+            totp = pyotp.TOTP(base32_key)
+            secret_key = totp.now()
+
+            data = {'username': username, "MFA": base32_key}
+            sendEmail(secret_key)
+            db["MFA"].find_one_and_update(
+                query, {"$set": data}, upsert=True)
+            session["username"] = username
+            return redirect("/auth/verification")
 
         flash(error)
 
     return render_template("auth/login.html")
 
+
+def verify_otp(secret_key, otp):
+    totp = pyotp.TOTP(secret_key)
+    return totp.verify(otp)
+
+
+@bp.route("/verification", methods=("GET","POST"))
+def verification():
+    print(request.method)
+    if request.method=="POST":
+        username = session["username"]
+        error = None
+        db = get_db()
+        code = request.form["code"]
+        if code is None:
+            error = "No code sent"
+        if error is None:
+            user = db["MFA"].find_one({
+                'username': username
+            })
+            print(user["MFA"])
+            if verify_otp(user["MFA"],code):
+                user= db["User"].find_one({'username': username})
+                session.clear()
+                session["user_id"] = str(user["_id"])  # pymongo object id
+                return redirect(url_for("home.dashboard"))
+            else: 
+                error = "Invalid"
+        flash(error)
+    return render_template("auth/verification.html")
 
 @bp.route("/logout")
 def logout():
@@ -144,3 +209,9 @@ def recover():
                 return redirect(url_for("auth.login"))
 
     return render_template("auth/recover.html")
+
+
+
+
+
+

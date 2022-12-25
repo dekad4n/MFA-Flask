@@ -1,4 +1,6 @@
+from flask import session
 import os
+
 
 from flask import Flask, render_template
 
@@ -30,7 +32,8 @@ def create_app():
     @app.route("/", methods=(["GET"]))
     def index():
         return render_template("index.html")
-        
+
+    
     # make url_for('index') == url_for('blog.index')
     # in another app, you might define a separate main index here with
     # app.route, while giving the blog blueprint a url_prefix, but for
