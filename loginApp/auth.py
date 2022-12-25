@@ -121,3 +121,26 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("index"))
+
+
+@bp.route("/recover", methods=["POST","GET"])
+def recover():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        recoveryPhrase = request.form["recoveryPhrase"]
+        db = get_db()
+        error = None
+        user = db["User"].find_one({
+            'username': username
+        })
+
+        if user is None:
+            error = "Incorrect username."
+        if error is None:
+            if check_password_hash(user["recoveryPhrase"], recoveryPhrase):
+                db["User"].update_one({'username': username}, {
+                                      '$set': {'password': generate_password_hash(password)}})
+                return redirect(url_for("auth.login"))
+
+    return render_template("auth/recover.html")
