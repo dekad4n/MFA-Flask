@@ -1,6 +1,7 @@
 .env
 .venv
 .venv-437
+./loginApp/437venv
 __pycache__
 data
 .DS_STORE
