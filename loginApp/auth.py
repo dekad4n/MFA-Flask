@@ -10,6 +10,7 @@ import smtplib
 import pyotp
 import secrets
 import base64
+import os
 
 
 
@@ -102,7 +103,7 @@ def sendEmail(code,to):
     server = smtplib.SMTP('smtp.office365.com', port=587)
     server.starttls()
     # Login to the server (optional)
-    server.login('sadigulbey@hotmail.com', 'hocam123')
+    server.login(os.environ['SMTP_HOTMAIL'], os.environ['HOTMAIL_PASSWORD'])
     # session['server'] = server
     # Set the recipient and message
     to = to
@@ -111,7 +112,7 @@ def sendEmail(code,to):
     msg = f'Subject: {subject}\n\n{body}'
 
     # Send the email
-    server.sendmail('sadigulbey@hotmail.com', to, msg)
+    server.sendmail(os.environ['SMTP_HOTMAIL'], to, msg)
     server.quit()
 
 @bp.route("/login", methods=("GET", "POST"))

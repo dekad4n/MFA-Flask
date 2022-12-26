@@ -2,6 +2,7 @@ import pymongo
 import logging
 import click
 from flask import g
+import os
 
 from werkzeug.security import generate_password_hash
 
@@ -14,7 +15,7 @@ def get_db():
     again.
     """
     if "db" not in g:
-        g.db = pymongo.MongoClient('mongodb://admin:pass@localhost:27017/')
+        g.db = pymongo.MongoClient(os.environ['MONGO_URL'])
 
     return g.db.loginApp
 

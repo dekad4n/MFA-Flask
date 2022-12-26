@@ -1,6 +1,6 @@
 from flask import session
 import os
-
+from dotenv import load_dotenv
 
 from flask import Flask, render_template
 
@@ -21,6 +21,7 @@ def create_app():
 
     # register the database commands
     import db
+    load_dotenv()
     with app.app_context():
         db.init_app(app)
 
@@ -28,7 +29,7 @@ def create_app():
     import auth, home
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
-
+    
     @app.route("/", methods=(["GET"]))
     def index():
         return render_template("index.html")
