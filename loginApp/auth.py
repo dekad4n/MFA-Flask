@@ -206,11 +206,48 @@ def recover():
             error = "Incorrect username."
         if error is None:
             if check_password_hash(user["recoveryPhrase"], recoveryPhrase):
+                key = secrets.token_bytes(16)
+                base32_key = base64.b32encode(key).decode('utf-8')
+                totp = pyotp.TOTP(base32_key)
+                secret_key = totp.now()
+                sendEmail(secret_key, user["email"])
+                data = {'username': username, "RMFA": base32_key}
+                db["RMFA"].find_one_and_update(
+                    {'username': username}, {"$set": data}, upsert=True)
+                session["username"] = username
+                return redirect(url_for("auth.recover_verification"))
+            else:
+                error = "Incorrect recovery phrase."
+        flash(error)
+    return render_template("auth/recover.html")
+
+@bp.route("/recover/verification", methods=("GET","POST"))
+def recover_verification():
+    print(request.method)
+    if request.method == "POST":
+        username = session["username"]
+        code = request.form["code"]
+        password = request.form["password"]
+        db = get_db()
+        error = None
+        user = db["RMFA"].find_one({
+            'username': username
+        })
+        if code is None:
+            error = "No code sent"
+        user = db["RMFA"].find_one({'username': username})
+        if user is None:
+            error = "Incorrect username."
+        if error is None:
+            if verify_otp(user["RMFA"], code):
                 db["User"].update_one({'username': username}, {
                                       '$set': {'password': generate_password_hash(password)}})
                 return redirect(url_for("auth.login"))
+            else:
+                error = "Invalid code."
+        flash(error)
+    return render_template("auth/recover_verification.html")
 
-    return render_template("auth/recover.html")
 
 
 
