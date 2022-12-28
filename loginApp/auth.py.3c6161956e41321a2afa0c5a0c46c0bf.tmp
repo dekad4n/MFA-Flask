@@ -212,8 +212,8 @@ def recover():
             if check_password_hash(user["recoveryPhrase"], recoveryPhrase):
                 key = secrets.token_bytes(16)
                 base32_key = base64.b32encode(key).decode('utf-8')
-                totp = pyotp.TOTP(base32_key)
-                secret_key = totp.now()
+                totp = pyotp.HOTP(base32_key)
+                secret_key = totp.at(0)
                 sendEmail(secret_key, user["email"])
                 data = {'username': username, "RMFA": base32_key}
                 db["RMFA"].find_one_and_update(
