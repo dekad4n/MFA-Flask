@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "983b85400ee82f104b9e68fe2dc1054e4ff355bf92d6852282f5691c9e015698"
+            "sha256": "c84cb62c5b8dbad4c581a136956fdca5184dd899dcfe238218a008319245272c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -358,11 +358,11 @@
         },
         "platformdirs": {
             "hashes": [
-                "sha256:69de5933ec873bd7ddae497f004be17cf200bce048dc987c28fc4e347d5349ff",
-                "sha256:e13f076e0f725f1beb58e7d26f80eff94099941740d3c664db03efecd6561271"
+                "sha256:83c8f6d04389165de7c9b6f0c682439697887bca0aa2f1c87ef1826be3584490",
+                "sha256:e1fea1fe471b9ff8332e229df3cb7de4f53eeea4998d3b6bfff542115e998bd2"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==2.6.1"
+            "version": "==2.6.2"
         },
         "poetry-semver": {
             "hashes": [
@@ -560,6 +560,14 @@
             ],
             "index": "pypi",
             "version": "==0.21.0"
+        },
+        "python-taint": {
+            "hashes": [
+                "sha256:2fadece30f51d4697fbc10148fe6fa663d9e034e426a876fa3ef5e09fe2c1c57",
+                "sha256:87d2647e22a086251471ca4762d97410f82b709d698925395e7010aa3ca483dd"
+            ],
+            "index": "pypi",
+            "version": "==0.42"
         },
         "pyyaml": {
             "hashes": [
