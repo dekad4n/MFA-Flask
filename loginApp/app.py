@@ -1,9 +1,10 @@
 from flask import session
 import os
 from dotenv import load_dotenv
-
+from flask import request, flash
 from flask import Flask, render_template
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 def create_app():
     """Create and configure an instance of the Flask application."""
@@ -29,7 +30,71 @@ def create_app():
     import auth, home
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
-    
+
+    limiter = Limiter(key_func=get_remote_address)
+    limiter.init_app(app)
+
+    @app.before_request
+    def before_request():
+        try:
+            with limiter.limit("10/minute"):
+                print("Request")
+        except:
+            error = None
+            if request.endpoint == "auth.login":
+                username= None
+                try:
+                    username = request.form["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, check " + user["email"]
+                except:
+                    pass
+                
+            elif request.endpoint == "auth.verification":
+                
+                if session["username"] != None:
+                    username = session["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, check " + user["email"]
+                    else:
+                        error = "No such user with username"
+                else:
+                    pass
+            elif request.endpoint == "auth.recover":
+                try:
+                    username = request.form["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, check " + user["email"]
+                    else:
+                        try:
+                            recoveryPhrase = request.form["recoveryPhrase"]
+                            user = cdb["User"].find_one(
+                                {'recoveryPhrase': recoveryPhrase})
+                            if user is not None:
+                                error = "Your username is wrong, did you mean " + \
+                                    user["username"]
+                            else:
+                                error = "No user with recovery phrase" + recoveryPhrase
+                        except:
+                            pass
+                except:
+                    pass
+            flash(error)
+            return render_template("error_429.html")
+
+
     @app.route("/", methods=(["GET"]))
     def index():
         return render_template("index.html")

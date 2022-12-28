@@ -1,12 +1,12 @@
 {% extends 'base.html' %} {% block header %}
-<h1>{% block title %}Log In{% endblock %}</h1>
+<h1>{% block title %}Recover{% endblock %}</h1>
 {% endblock %} {% block content %}
 <form method="post">
   <label for="username">Username</label>
   <input name="username" id="username" required />
-  <label for="password">Passowrd</label>
+  <label for="password">New Password</label>
   <input name="password" id="password" required />
-  <label for="recoveryPhrase">recoveryPhrase</label>
+  <label for="recoveryPhrase">Recovery keyword</label>
   <input name="recoveryPhrase" id="recoveryPhrase" required />
   <input type="submit" value="Log In" />
 </form>

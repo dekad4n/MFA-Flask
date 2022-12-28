@@ -99,21 +99,23 @@ def sendEmail(code,to):
 
     # server = session.get('server')
     # if server is None:
-    print("here",code)
-    server = smtplib.SMTP('smtp.office365.com', port=587)
-    server.starttls()
-    # Login to the server (optional)
-    server.login(os.environ['SMTP_HOTMAIL'], os.environ['HOTMAIL_PASSWORD'])
-    # session['server'] = server
-    # Set the recipient and message
-    to = to
-    subject = 'Two-factor authentication code'
-    body = f'Your code is: {code}'
-    msg = f'Subject: {subject}\n\n{body}'
+    try: 
+        server = smtplib.SMTP('smtp.office365.com', port=587)
+        server.starttls()
+        # Login to the server (optional)
+        server.login(os.environ['SMTP_HOTMAIL'], os.environ['HOTMAIL_PASSWORD'])
+        # session['server'] = server
+        # Set the recipient and message
+        to = to
+        subject = 'Two-factor authentication code'
+        body = f'Your code is: {code}'
+        msg = f'Subject: {subject}\n\n{body}'
 
-    # Send the email
-    server.sendmail(os.environ['SMTP_HOTMAIL'], to, msg)
-    server.quit()
+        # Send the email
+        server.sendmail(os.environ['SMTP_HOTMAIL'], to, msg)
+        server.quit()
+    except:
+        pass
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
@@ -137,11 +139,11 @@ def login():
             query = {'username': username}
             key = secrets.token_bytes(16)
             base32_key = base64.b32encode(key).decode('utf-8')
-            print(base32_key)
-            totp = pyotp.TOTP(base32_key)
-            secret_key = totp.now()
 
-            data = {'username': username, "MFA": base32_key}
+            hotp = pyotp.HOTP(base32_key)
+            secret_key = hotp.at(0)
+            print(user["email"])
+            data = {'username': username, "MFA": base32_key, 'trials': 0}
             sendEmail(secret_key, user["email"])
             db["MFA"].find_one_and_update(
                 query, {"$set": data}, upsert=True)
@@ -153,17 +155,20 @@ def login():
     return render_template("auth/login.html")
 
 
-def verify_otp(secret_key, otp):
-    totp = pyotp.TOTP(secret_key)
-    return totp.verify(otp)
+def verify_otp(secret_key, otp,trials):
+    hotp = pyotp.HOTP(secret_key)
+    return hotp.verify(otp, trials)
 
 
 @bp.route("/verification", methods=("GET","POST"))
 def verification():
     print(request.method)
     if request.method=="POST":
-        username = session["username"]
         error = None
+        try: 
+            username = session["username"]
+        except KeyError:
+            return render_template("auth/login.html")
         db = get_db()
         code = request.form["code"]
         if code is None:
@@ -172,13 +177,16 @@ def verification():
             user = db["MFA"].find_one({
                 'username': username
             })
+            trials = user['trials']
             print(user["MFA"])
-            if verify_otp(user["MFA"],code):
+            if verify_otp(user["MFA"],code,trials):
                 user= db["User"].find_one({'username': username})
                 session.clear()
                 session["user_id"] = str(user["_id"])  # pymongo object id
                 return redirect(url_for("home.dashboard"))
-            else: 
+            else:
+                db["User"].update_one({'username': username}, {
+                                      '$set': {'trials': trials + 1}})
                 error = "Invalid"
         flash(error)
     return render_template("auth/verification.html")
@@ -201,15 +209,17 @@ def recover():
         user = db["User"].find_one({
             'username': username
         })
-
         if user is None:
             error = "Incorrect username."
         if error is None:
             if check_password_hash(user["recoveryPhrase"], recoveryPhrase):
                 db["User"].update_one({'username': username}, {
                                       '$set': {'password': generate_password_hash(password)}})
+                flash("Set password successfully")
                 return redirect(url_for("auth.login"))
-
+            else:
+                error = "Incorrect recovery"
+        flash(error)
     return render_template("auth/recover.html")
 
 
