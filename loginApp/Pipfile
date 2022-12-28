@@ -9,6 +9,7 @@ pymongo = "*"
 pyotp = "*"
 python-dotenv = "*"
 Flask-Limiter = "*"
+prospector = {extras = ["with_everything"], version = "*"}
 
 [dev-packages]
 

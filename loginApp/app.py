@@ -1,5 +1,6 @@
 from flask import session
 import os
+import db
 from dotenv import load_dotenv
 from flask import request, flash
 from flask import Flask, render_template
@@ -21,7 +22,6 @@ def create_app():
         pass
 
     # register the database commands
-    import db
     load_dotenv()
     with app.app_context():
         db.init_app(app)
