@@ -37,7 +37,7 @@ def create_app():
     @app.before_request
     def before_request():
         try:
-            with limiter.limit("20/minute"):
+            with limiter.limit("10/minute"):
                 print("Request")
         except:
             error = None

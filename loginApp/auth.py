@@ -202,7 +202,7 @@ def logout():
 def recover():
     if request.method == "POST":
         username = request.form["username"]
-        password = request.form["password"]
+        session["password"] = request.form["password"]
         recoveryPhrase = request.form["recoveryPhrase"]
         db = get_db()
         error = None
@@ -235,7 +235,7 @@ def recover_verification():
     if request.method == "POST":
         username = session["username"]
         code = request.form["code"]
-        password = request.form["password"]
+        password = session["password"]
         db = get_db()
         error = None
         user = db["RMFA"].find_one({
@@ -247,7 +247,7 @@ def recover_verification():
         if user is None:
             error = "Incorrect username."
         if error is None:
-            if verify_otp(user["RMFA"], code):
+            if verify_otp(user["RMFA"], code,user['trials']):
                 db["User"].update_one({'username': username}, {
                                       '$set': {'password': generate_password_hash(password)}})
                 flash("Set password successfully")
