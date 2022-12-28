@@ -9,6 +9,7 @@ pymongo = "*"
 pyotp = "*"
 python-dotenv = "*"
 Flask-Limiter = "*"
+bandit = "*"
 
 [dev-packages]
 
