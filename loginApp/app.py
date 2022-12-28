@@ -26,7 +26,7 @@ def create_app():
     with app.app_context():
         db.init_app(app)
 
-    # apply the blueprints to the app
+    # # apply the blueprints to the app
     import auth, home
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
