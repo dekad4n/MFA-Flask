@@ -41,6 +41,58 @@ def create_app():
             with limiter.limit("10/minute"):
                 print("Request")
         except:
+            error = None
+            if request.endpoint == "auth.login":
+                username= None
+                try:
+                    username = request.form["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, please check"
+                except:
+                    pass
+                
+            elif request.endpoint == "auth.verification":
+                
+                if session["username"] != None:
+                    username = session["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, check "
+                    else:
+                        error = "No such user with username"
+                else:
+                    pass
+            elif request.endpoint == "auth.recover":
+                try:
+                    username = request.form["username"]
+                    cdb = db.get_db()
+                    user = cdb["User"].find_one({
+                        'username': username
+                    })
+                    if user is not None:
+                        error = "We sent you email, check "
+                    else:
+                        try:
+                            recoveryPhrase = request.form["recoveryPhrase"]
+                            user = cdb["User"].find_one(
+                                {'recoveryPhrase': recoveryPhrase})
+                            if user is not None:
+                                error = "Your username is wrong, did you mean " + \
+                                    user["username"]
+                            else:
+                                error = "No user with recovery phrase" + recoveryPhrase
+                        except:
+                            pass
+                except:
+                    pass
+            flash(error)
             return render_template("error_429.html")
 
 
