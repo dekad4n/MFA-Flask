@@ -8,6 +8,8 @@ flask = "*"
 pymongo = "*"
 python-taint = "*"
 prospector = "*"
+pyre-check = "*"
+mypy = "*"
 
 [dev-packages]
 

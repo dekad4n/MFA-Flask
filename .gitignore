@@ -11,3 +11,4 @@ get-pip.py
 cs437env
 elif437
 sadi
+.mypy_cache
