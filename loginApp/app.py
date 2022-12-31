@@ -1,17 +1,19 @@
 from flask import session
 import os
+import db, auth, home
 from dotenv import load_dotenv
 from flask import request, flash
 from flask import Flask, render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+load_dotenv()
 
 def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__)
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY="OUR VERY VERY SECRET KEY",
+        SECRET_KEY=os.environ['FLASK_KEY'],
     )
 
     # ensure the instance folder exists
@@ -21,13 +23,12 @@ def create_app():
         pass
 
     # register the database commands
-    import db
-    load_dotenv()
     with app.app_context():
         db.init_app(app)
 
     # # apply the blueprints to the app
     import auth, home
+    # apply the blueprints to the app
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
 
@@ -50,7 +51,7 @@ def create_app():
                         'username': username
                     })
                     if user is not None:
-                        error = "We sent you email, check " + user["email"]
+                        error = "We sent you email, please check"
                 except:
                     pass
                 

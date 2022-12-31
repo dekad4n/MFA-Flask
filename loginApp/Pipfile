@@ -10,6 +10,8 @@ pyotp = "*"
 python-dotenv = "*"
 Flask-Limiter = "*"
 bandit = "*"
+prospector = {extras = ["with_everything"], version = "*"}
+python-taint = "*"
 
 [dev-packages]
 
