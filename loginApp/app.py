@@ -49,7 +49,7 @@ def create_app():
                         'username': username
                     })
                     if user is not None:
-                        error = "We sent you email, check " + user["email"]
+                        error = "We sent you email, please check"
                 except:
                     pass
                 
