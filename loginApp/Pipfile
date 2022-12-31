@@ -9,6 +9,8 @@ pymongo = "*"
 pyotp = "*"
 python-dotenv = "*"
 Flask-Limiter = "*"
+prospector = "*"
+python-taint = "*"
 
 [dev-packages]
 
