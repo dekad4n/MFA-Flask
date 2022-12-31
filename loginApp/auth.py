@@ -142,5 +142,7 @@ def recover():
                 db["User"].update_one({'username': username}, {
                                       '$set': {'password': generate_password_hash(password)}})
                 return redirect(url_for("auth.login"))
-
+            else:
+                error = "Wrong recovery phrase"
+        flash(error)
     return render_template("auth/recover.html")
